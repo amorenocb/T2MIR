@@ -90,6 +90,11 @@ def computeKmeansIndexResults(r_data, q_data, branching, checks):
     saveResults("KmeansResults-{}-{}.csv".format(checks,branching), zip(result, dist), build_time, query_time, checks, branching)
 
 
+# Usage:
+# indexEvaluator.py -index file name -query file name -index [if index is kdtree or kmeans: -[trees | branching]]
+# "mega-2014_04_10T21_15_19-48000x128_4F.bin"
+# "mega-2014_04_11T21_13_04-48000x128_4F.bin"
+
 r_data_filename = sys.argv[1]
 q_data_filename = sys.argv[2]
 r_data = loadData(r_data_filename)
@@ -98,19 +103,22 @@ q_data = loadData(q_data_filename)
 index = sys.argv[3]
 
 if(len(sys.argv) > 4):
-    checks = int(sys.argv[4])
+
     if(index == 'kdtree'):
-        number_of_trees = int(sys.argv[5])
-        computeKdTreeIndexResults(r_data.descriptors, q_data.descriptors, number_of_trees, checks)
+
+        number_of_trees = int(sys.argv[4])
+        for c in [1,5,25,125,625,1000]:
+            computeKdTreeIndexResults(r_data.descriptors, q_data.descriptors, number_of_trees, c)
+
     elif(index == 'kmeans'):
-        branching = int(sys.argv[5])
-        computeKmeansIndexResults(r_data.descriptors, q_data.descriptors, branching, checks)
+
+        branching = int(sys.argv[4])
+        for c in [1, 5, 25, 125, 625, 1000]:
+            computeKmeansIndexResults(r_data.descriptors, q_data.descriptors, branching, c)
+
 elif(index == 'linear'):
     computeLinearIndexResults(r_data.descriptors, q_data.descriptors)
 
-
-# "mega-2014_04_10T21_15_19-48000x128_4F.bin"
-# "mega-2014_04_11T21_13_04-48000x128_4F.bin"
 
 
 
