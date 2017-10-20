@@ -2,6 +2,7 @@ from pyflann import *
 from dataLoaders import Dataset
 import time
 import csv
+import sys
 
 # algorithm - the algorithm to use for building the index.
 # The possible val- ues are: ’linear’, ’kdtree’, ’kmeans’, ’composite’ or ’autotuned’.
@@ -15,15 +16,12 @@ def loadData(data_file):
     return Dataset(data_file)
 
 def saveResults(output_file_name, results, build_time, query_time, checks = None, trees = None, branching = None):
-    i = 0
     with open(output_file_name, "w") as output:
         writer = csv.writer(output, lineterminator="\n")
         for (r, d) in results:
-            if (i % 1000 == 0):
-                print(i)
             writer.writerow([r, d])
-            i += 1
         writer.writerow(["Build time", build_time])
+        writer.writerow(["Query time", query_time])
         if trees:
             writer.writerow(["Checks", checks])
             writer.writerow(["Trees", trees])
@@ -31,7 +29,7 @@ def saveResults(output_file_name, results, build_time, query_time, checks = None
             writer.writerow(["Checks", checks])
             writer.writerow(["Branching", branching])
 
-def computeLinearIndexResults(r_data, q_data, result_file):
+def computeLinearIndexResults(r_data, q_data):
 
     build_data = r_data
     query_data = q_data
@@ -92,10 +90,28 @@ def computeKmeansIndexResults(r_data, q_data, branching, checks):
     saveResults("KmeansResults-{}-{}.csv".format(checks,branching), zip(result, dist), build_time, query_time, checks, branching)
 
 
+r_data_filename = sys.argv[1]
+q_data_filename = sys.argv[2]
+r_data = loadData(r_data_filename)
+q_data = loadData(q_data_filename)
 
-r_data = loadData("mega-2014_04_10T21_15_19-48000x128_4F.bin")
-q_data = loadData("mega-2014_04_11T21_13_04-48000x128_4F.bin")
+index = sys.argv[3]
 
-computeLinearIndexResults(r_data.descriptors, q_data.descriptors, "linear_results.csv")
+if(len(sys.argv) > 4):
+    checks = int(sys.argv[4])
+    if(index == 'kdtree'):
+        number_of_trees = int(sys.argv[5])
+        computeKdTreeIndexResults(r_data.descriptors, q_data.descriptors, number_of_trees, checks)
+    elif(index == 'kmeans'):
+        branching = int(sys.argv[5])
+        computeKmeansIndexResults(r_data.descriptors, q_data.descriptors, branching, checks)
+elif(index == 'linear'):
+    computeLinearIndexResults(r_data.descriptors, q_data.descriptors)
+
+
+# "mega-2014_04_10T21_15_19-48000x128_4F.bin"
+# "mega-2014_04_11T21_13_04-48000x128_4F.bin"
+
+
 
 
