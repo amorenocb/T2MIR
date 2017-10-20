@@ -8,7 +8,7 @@ For the following indexes a **Similarity Join of the approximate nearest neighbo
  - **K-Means Tree** for different levels of *branching*
  - **Linear Scan** or brute force algorithm. This will be our base line for comparison.
  
-The following are the measurements used for comparinson:
+The following are the measurements used for comparison:
 
  - **Effectiveness** : Fraction of the query's made to the index which nearest neighbour is the same as the one found by the **Linear Scan**.
  - **Efficiency** : Fraction of time used for resolving all the query's in comparinson to **Linear Scan**.
