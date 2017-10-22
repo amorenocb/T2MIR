@@ -1,5 +1,7 @@
 import pandas as pd
 import csv
+import os
+import sys
 
 # Returns what fraction of index2_results where
 # actually in index1_results.
@@ -32,8 +34,12 @@ def efficiency(index1_results, index2_results):
 
     return index2_query_time/index1_query_time
 
-def test():
-
-    print(efficiency("LinearResults.csv","KmeansResults-100-40.csv"))
-
-test()
+with open("stats.csv", "w") as output:
+    writer = csv.writer(output, lineterminator="\n")
+    writer.writerow(["Features","Algoritmo", "Parametro" ,"Checks", "Eficiencia", "Efectividad"])
+    for filename in os.listdir("."):
+        if filename != "LinearResults.csv" and filename.endswith(".csv") and filename != "stats.csv":
+            checks = filename.split("-")[1]
+            alg = filename.split("-")[0]
+            parameter = filename.split("-")[2].split(".")[0]
+            writer.writerow([os.path.basename(os.getcwd()) ,alg, parameter ,checks, efficiency("LinearResults.csv", filename), effectiveness("LinearResults.csv", filename)])
